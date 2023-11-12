@@ -4,9 +4,11 @@ import com.prosvirnin.alphabackend.model.company.Company;
 import com.prosvirnin.alphabackend.model.survey.Answers;
 import com.prosvirnin.alphabackend.model.survey.Survey;
 import com.prosvirnin.alphabackend.model.survey.SurveyRequest;
+import com.prosvirnin.alphabackend.model.user.User;
 import com.prosvirnin.alphabackend.repository.AnswersRepository;
 import com.prosvirnin.alphabackend.repository.CompanyRepository;
 import com.prosvirnin.alphabackend.repository.SurveyRepository;
+import com.prosvirnin.alphabackend.repository.UserRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,14 @@ public class SurveyService {
 
     private final CompanyRepository companyRepository;
 
+    private final UserRepository userRepository;
+
     @Autowired
-    public SurveyService(SurveyRepository surveyRepository, AnswersRepository answersRepository, CompanyRepository companyRepository) {
+    public SurveyService(SurveyRepository surveyRepository, AnswersRepository answersRepository, CompanyRepository companyRepository, UserRepository userRepository) {
         this.surveyRepository = surveyRepository;
         this.answersRepository = answersRepository;
         this.companyRepository = companyRepository;
+        this.userRepository = userRepository;
         extensions = List.of("bmp", "jpg", "jpeg", "png");
     }
 
@@ -94,6 +99,20 @@ public class SurveyService {
         Survey survey = new Survey(surveyRequest.getText(), pictureName, surveyRequest.getQuestions(), company);
         company.addSurvey(survey);
         surveyRepository.save(survey);
+        return true;
+    }
+
+    @Transactional
+    public boolean takeSurvey(Long surveyId, Long userId, String answers){
+        Survey survey = surveyRepository.getReferenceById(surveyId);
+        if (survey.getId() == 0) return false;
+        User user = userRepository.getReferenceById(userId);
+        if (user.getId() == 0) return  false;
+        Answers answersObj = new Answers(survey, answers);
+        answersObj.setUser(user);
+        survey.addAnswers(answersObj);
+        user.addAnswersList(answersObj);
+        answersRepository.save(answersObj);
         return true;
     }
 }

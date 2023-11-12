@@ -151,6 +151,18 @@ public class User {
         this.role = role;
     }
 
+    public List<Answers> getAnswersList() {
+        return answersList;
+    }
+
+    public void setAnswersList(List<Answers> answersList) {
+        this.answersList = answersList;
+    }
+
+    public void addAnswersList(Answers answers) {
+        this.answersList.add(answers);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

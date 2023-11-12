@@ -34,6 +34,16 @@ public class SurveyController {
         return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }
 
+    @PostMapping("/{survey_id}/answer/{user_id}")
+    public ResponseEntity<?> takeSurvey(
+            @PathVariable("survey_id") Long surveyId,
+            @PathVariable("user_id") Long userId,
+            @RequestBody String answers){
+        if(surveyService.takeSurvey(surveyId, userId, answers))
+            return ResponseEntity.ok(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+    }
+
     @GetMapping("/{id}")
     public Survey getSurvey(@PathVariable("id") Long id){
         return surveyService.findById(id);
