@@ -7,8 +7,11 @@
 | `GET /api/users/{id}`                                  | Получение пользователя               |       -                               |   `User`         |
 | `POST /api/users/{id}/edit`                            | Редактирование пользователя          |       `User`                          |    -             |
 | `POST /api/company/`                                   | Создание кампании                    |       `CompanyRequest`                |   -              |
-| `POST /api/company/{id}`                               | Получение кампании                   |       -                               |  `Company`       |
-| `POST /api/company/{company_id}/addUserById/{user_id}` | Добавление юзера в кампанию          |       -                               |  -               |
+| `GET /api/company/{id}`                                | Получение кампании                   |       -                               |  `Company`       |
+| `GET /api/company/{company_id}/addUserById/{user_id}`  | Добавление юзера в кампанию          |       -                               |  -               |
+| `POST /api/survey/{survey_id}/answer/{user_id}`        | User проходит опрос                  |      `Answers`(Любой формат)          |  -               |
+
+Если в тексте ответа прочерк, то может приходить стандартный ответ (OK, I AM A TEAPOT etc)
 
 # `LoginRequest`
 Класс для регистрации пользователя. Потом в настройках его можно будет изменить.<br>
