@@ -1,6 +1,7 @@
 package com.prosvirnin.alphabackend.model.survey;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.prosvirnin.alphabackend.model.company.Company;
 import jakarta.persistence.*;
 
@@ -26,11 +27,12 @@ public class Survey {
     private String questions;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "company-survey")
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
 
     @OneToMany(mappedBy = "survey")
+    @JsonManagedReference(value = "survey-answers")
     private List<Answers> answers;
 
     public Survey() {

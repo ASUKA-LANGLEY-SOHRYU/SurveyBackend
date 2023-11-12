@@ -22,11 +22,11 @@ public class Company {
     private String name;
 
     @OneToMany(mappedBy = "company")
-    @JsonManagedReference
+    @JsonManagedReference(value = "company-user")
     private List<User> workers;
 
     @OneToMany(mappedBy = "company")
-    @JsonManagedReference
+    @JsonManagedReference(value = "company-survey")
     private List<Survey> surveys;
 
     public long getId() {

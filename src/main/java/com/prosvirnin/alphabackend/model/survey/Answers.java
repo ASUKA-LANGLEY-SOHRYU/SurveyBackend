@@ -16,7 +16,7 @@ public class Answers {
     private long id;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "survey-answers")
     @JoinColumn(name = "survey_id", referencedColumnName = "id")
     private Survey survey;
 
@@ -24,7 +24,7 @@ public class Answers {
     private String data;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "user-answers")
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
