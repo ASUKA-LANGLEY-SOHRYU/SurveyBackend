@@ -126,6 +126,8 @@
     ]
 }
 ```
+# БД
+Все таблицы описаны в init.sql в каталоге ресурсов.
 ```mermaid
 graph LR
 A(Address) --> B(User)
