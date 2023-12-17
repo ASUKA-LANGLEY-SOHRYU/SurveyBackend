@@ -1,6 +1,6 @@
 package com.prosvirnin.alphabackend.service;
 
-import com.prosvirnin.alphabackend.model.user.LoginRequest;
+import com.prosvirnin.alphabackend.auth.LoginRequest;
 import com.prosvirnin.alphabackend.model.user.User;
 import com.prosvirnin.alphabackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

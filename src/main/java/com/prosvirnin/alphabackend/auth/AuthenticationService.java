@@ -1,0 +1,53 @@
+package com.prosvirnin.alphabackend.auth;
+
+import com.prosvirnin.alphabackend.config.JwtService;
+import com.prosvirnin.alphabackend.exception.EmailAlreadyExistsException;
+import com.prosvirnin.alphabackend.model.user.User;
+import com.prosvirnin.alphabackend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+
+@Service
+public class AuthenticationService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    public AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+    }
+
+    public AuthenticationResponse register(LoginRequest request){
+        if (userRepository.existsByEmail(request.email())) {
+            throw new EmailAlreadyExistsException(request.email());
+        }
+
+        var user = new User(request.email(), passwordEncoder.encode(request.password()), request.email());
+        userRepository.save(user);
+        String jwtToken = jwtService.generateToken(user);
+        var authResponse =  new AuthenticationResponse();
+        authResponse.setToken(jwtToken);
+        return authResponse;
+    }
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+        var user = userRepository.findByEmail(request.email()).orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        var authResponse =  new AuthenticationResponse();
+        authResponse.setToken(jwtToken);
+        return authResponse;
+    }
+}
+
