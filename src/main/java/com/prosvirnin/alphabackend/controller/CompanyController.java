@@ -31,9 +31,10 @@ public class CompanyController {
         return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }
 
-    @GetMapping("/{company_id}/addUserById/{user_id}")
-    public ResponseEntity<?> addUser(@PathVariable("company_id") Long companyId, @PathVariable("user_id") Long user_id){
-        if(companyService.addWorker(companyId, user_id))
+    @GetMapping("/addUserById/{user_id}")
+    public ResponseEntity<?> addUser(@PathVariable("user_id") Long user_id){
+        System.out.println(user_id);
+        if(companyService.addWorker(user_id))
             return  ResponseEntity.ok(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }

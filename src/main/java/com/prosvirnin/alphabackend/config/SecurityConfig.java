@@ -1,5 +1,6 @@
 package com.prosvirnin.alphabackend.config;
 
+import com.prosvirnin.alphabackend.model.user.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/company/addUserById/**").hasRole(Role.CompanyOwner.name())
+                        .requestMatchers("/api/survey").hasRole(Role.Interviewer.name())
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

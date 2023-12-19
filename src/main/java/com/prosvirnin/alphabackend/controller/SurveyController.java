@@ -26,7 +26,7 @@ public class SurveyController {
     public @ResponseBody ResponseEntity<?> createSurvey(
             @RequestParam(name = "survey") String survey,
             @RequestParam(name = "picture", required = false) MultipartFile file) throws IOException {
-        System.out.println(survey.toString());
+        System.out.println(survey);
         ObjectMapper objectMapper = new ObjectMapper();
         SurveyRequest surveyRequest = objectMapper.readValue(survey, SurveyRequest.class);
         if(surveyService.save(surveyRequest, file))
@@ -34,12 +34,11 @@ public class SurveyController {
         return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }
 
-    @PostMapping("/{survey_id}/answer/{user_id}")
+    @PostMapping("/answer/{survey_id}")
     public ResponseEntity<?> takeSurvey(
             @PathVariable("survey_id") Long surveyId,
-            @PathVariable("user_id") Long userId,
             @RequestBody String answers){
-        if(surveyService.takeSurvey(surveyId, userId, answers))
+        if(surveyService.takeSurvey(surveyId, answers))
             return ResponseEntity.ok(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }

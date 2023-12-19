@@ -176,9 +176,15 @@ public class User implements UserDetails {
         this.answersList.add(answers);
     }
 
+    private List<SimpleGrantedAuthority> getAuthoritiesFromRole(){
+        return Role.getAllLessRoles(role).stream()
+                .map(r -> new SimpleGrantedAuthority(r.name()))
+                .toList();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("USER"));
+        return getAuthoritiesFromRole();
     }
 
     @Override
@@ -204,6 +210,11 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public User withoutPassword(){
+        password = null;
+        return this;
     }
 
     @Override

@@ -54,7 +54,10 @@ public class Company {
     }
 
     public void addWorker(User worker) {
-        this.workers.add(worker);
+        if(workers == null)
+            workers = List.of(worker);
+        else
+            workers.add(worker);
         //worker.setCompany(this);
     }
 

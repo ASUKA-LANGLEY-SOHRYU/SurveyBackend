@@ -11,6 +11,8 @@ import com.prosvirnin.alphabackend.repository.SurveyRepository;
 import com.prosvirnin.alphabackend.repository.UserRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -103,15 +105,17 @@ public class SurveyService {
     }
 
     @Transactional
-    public boolean takeSurvey(Long surveyId, Long userId, String answers){
+    public boolean takeSurvey(Long surveyId, String answers){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userRequest = (User) authentication.getPrincipal();
+
         Survey survey = surveyRepository.getReferenceById(surveyId);
         if (survey.getId() == 0) return false;
-        User user = userRepository.getReferenceById(userId);
-        if (user.getId() == 0) return  false;
+
         Answers answersObj = new Answers(survey, answers);
-        answersObj.setUser(user);
+        answersObj.setUser(userRequest);
         survey.addAnswers(answersObj);
-        user.addAnswersList(answersObj);
+        userRequest.addAnswersList(answersObj);
         answersRepository.save(answersObj);
         return true;
     }

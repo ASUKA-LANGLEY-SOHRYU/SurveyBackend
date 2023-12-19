@@ -23,16 +23,13 @@ public class UsersController {
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable("id") Long id){
-        return usersService.findById(id);
+        return usersService.findById(id).withoutPassword();
     }
 
-    @PostMapping("/{id}/edit")
-    public ResponseEntity<?> editUser(@PathVariable("id") Long id, @RequestBody User user){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user1 = (User) authentication.getPrincipal();
-        System.out.println(user1);
-//        if(usersService.edit(id, user))
-//            return ResponseEntity.ok(HttpStatus.OK);
+    @PostMapping("/me/edit")
+    public ResponseEntity<?> editUser(@RequestBody User user){
+        if(usersService.edit(user))
+            return ResponseEntity.ok(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }
 }

@@ -1,9 +1,12 @@
 package com.prosvirnin.alphabackend.service;
 
 import com.prosvirnin.alphabackend.auth.LoginRequest;
+import com.prosvirnin.alphabackend.model.user.Role;
 import com.prosvirnin.alphabackend.model.user.User;
 import com.prosvirnin.alphabackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,20 +21,6 @@ public class UsersService {
         this.userRepository = userRepository;
     }
 
-    @Transactional
-    public void save(User user){
-
-    }
-
-    @Transactional
-    public void save(LoginRequest loginRequest){
-        User user = new User();
-        user.setEmail(loginRequest.email());
-        user.setPassword(loginRequest.password());
-        user.setFullName(loginRequest.fullName());
-        userRepository.save(user);
-    }
-
     public User findByUsername(String username){
         return userRepository.findByFullName(username);
     }
@@ -41,10 +30,9 @@ public class UsersService {
     }
 
     @Transactional
-    public boolean edit(Long id, User user){
-        User toChange = findById(id);
-        if(toChange == null)
-            return false;
+    public boolean edit(User user){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User toChange = (User) authentication.getPrincipal();
         if(user.getFullName() != null)
             toChange.setFullName(user.getFullName());
         if(user.getAddress() != null)
