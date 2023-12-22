@@ -21,7 +21,7 @@ public class Company {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER)
     @JsonManagedReference(value = "company-user")
     private List<User> workers;
 

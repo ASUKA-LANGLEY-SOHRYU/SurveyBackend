@@ -1,6 +1,7 @@
 package com.prosvirnin.alphabackend.model.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.prosvirnin.alphabackend.model.company.Company;
 import com.prosvirnin.alphabackend.model.survey.Answers;
@@ -10,10 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "Users")
@@ -56,8 +55,10 @@ public class User implements UserDetails {
     private EducationLevel educationLevel;
 
     @Column(name = "income")
-    @Enumerated(EnumType.ORDINAL)
-    private Income income;
+    private Integer income;
+
+    @Column(name = "city")
+    private String city;
 
     @OneToOne(mappedBy = "user")
     private Address address;
@@ -116,6 +117,14 @@ public class User implements UserDetails {
         this.sex = sex;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public Company getCompany() {
         return company;
     }
@@ -140,11 +149,11 @@ public class User implements UserDetails {
         this.educationLevel = educationLevel;
     }
 
-    public Income getIncome() {
+    public Integer getIncome() {
         return income;
     }
 
-    public void setIncome(Income income) {
+    public void setIncome(Integer income) {
         this.income = income;
     }
 
@@ -176,37 +185,43 @@ public class User implements UserDetails {
         this.answersList.add(answers);
     }
 
-    private List<SimpleGrantedAuthority> getAuthoritiesFromRole(){
+    private Set<SimpleGrantedAuthority> getAuthoritiesFromRole(){
         return Role.getAllLessRoles(role).stream()
-                .map(r -> new SimpleGrantedAuthority(r.name()))
-                .toList();
+                .map(r -> new SimpleGrantedAuthority("ROLE_" + r.name()))
+                .collect(Collectors.toSet());
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getAuthoritiesFromRole();
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
         return email;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
