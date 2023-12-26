@@ -1,15 +1,8 @@
 # AlphaBackend
 | **API**                                                | **Описание**                         | **Текст запроса**                | **Текст ответа**      |
 |--------------------------------------------------------|--------------------------------------|:--------------------------------:|:---------------------:|
-| `POST /api/survey`                                     | Создание опроса                      | survey:`SurveyRequest`<br>picture:`picture`    |    -    |
-| `GET /api/survey/{id}`                                 | Получение опроса                     |       -                               |   `Survey`       |
-| `POST /api/login`                                      | Регистрация пользователя             |       `LoginRequest`                  |   -              |
-| `GET /api/users/{id}`                                  | Получение пользователя               |       -                               |   `User`         |
-| `POST /api/users/{id}/edit`                            | Редактирование пользователя          |       `User`                          |    -             |
-| `POST /api/company/`                                   | Создание компании                    |       `CompanyRequest`                |   -              |
-| `GET /api/company/{id}`                                | Получение компании                   |       -                               |  `Company`       |
-| `GET /api/company/{company_id}/addUserById/{user_id}`  | Добавление юзера в компанию          |       -                               |  -               |
-| `POST /api/survey/{survey_id}/answer/{user_id}`        | User проходит опрос                  |      `Answers`(Любой формат)          |  -               |
+| `POST /api/auth/register`                              | Регистрация                          | `LoginRequest`                   | `AuthenticationResponse`|
+| `POST /api/auth/authenticate`                          | Аутентификация                       |  `AuthenticationRequest`         |  `AuthenticationResponse`|
 
 Если в тексте ответа прочерк, то может приходить стандартный ответ (OK, I AM A TEAPOT etc)
 
@@ -23,6 +16,27 @@
     "password": "password"
 }
 ```
+
+# `AuthenticationResponse`
+Класс для аутентификации пользователя.<br>
+Пример:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMSIsImlhdCI6MTcwMzU4OTQ0MywiZXhwIjoxNzAzNjc1ODQzfQ.8DyiNKVmPqJhx0rJ4L8YrRhhVyuIMPF-dpBo9xMCdOw",
+  "error": null
+}
+```
+
+# `AuthenticationRequest`
+Класс для аутентификации пользователя.<br>
+Пример:
+```json
+{
+  "email": "email@mail.com",
+  "password": "email@mail.com"
+}
+```
+
 # `EducationLevel`: 0-2
 # `Income`: 0-2
 # `Role`: 0-2
