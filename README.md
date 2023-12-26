@@ -3,7 +3,11 @@
 |--------------------------------------------------------|--------------------------------------|:--------------------------------:|:---------------------:|
 | `POST /api/auth/register`                              | Регистрация                          | `LoginRequest`                   | `AuthenticationResponse`|
 | `POST /api/auth/authenticate`                          | Аутентификация                       |  `AuthenticationRequest`         |  `AuthenticationResponse`|
-| `POST /api/users/me/edit`                              | Редактирование пользователя          |  `AuthenticationRequest`         |  `AuthenticationResponse`|
+| `POST /api/users/me/edit`                              | Редактирование пользователя          |  `User`                          |  -                       |
+| `GET /api/users/me`                                    | Получении инфо о пользователе        |  -                               |  `User`                  |
+| `POST /api/company`                                    | Создание компании                    |  `CompanyRequest`                |  -                       |
+| `POST /api/company`                                    | Создание компании                    |  `CompanyRequest`                |  -                       |
+| `GET /api/company/addUserById/{user_id}`              | Добавляет пользователя с id = {user_id} в компанию, владельцем которой является отправитель. |  -        |  -                       |
 
 Если в тексте ответа прочерк, то может приходить стандартный ответ (OK, I AM A TEAPOT etc)
 
@@ -148,6 +152,14 @@ CarTourism,
     BuyingBooksAndMusic,
     VisitingCinemasAndTheaters,
     BuyingHouseholdGoods
+```
+# `CompanyRequest`
+Для создания компании. Создатель автоматически в нее добавляется. У него появляется роль `CompanyOwner`.
+Пример:
+```json
+{
+    "name": "КоМпАнИя Ура!!!!"
+}
 ```
 
 # `Survey`
@@ -295,15 +307,6 @@ Less, More, InBetween
         }
     ]
 }
-```
-# БД
-Все таблицы описаны в init.sql в каталоге ресурсов.
-```mermaid
-graph LR
-B(User) --> C(Company)
-D(Survey) --> C
-E(Answers) --> D
-E --> B
 ```
 
 
