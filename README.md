@@ -20,7 +20,6 @@
 ```json
 {
     "email": "email@mail.com",
-    "fullName": "Misha",
     "password": "password"
 }
 ```
