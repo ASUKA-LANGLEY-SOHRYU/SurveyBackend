@@ -6,8 +6,9 @@
 | `POST /api/users/me/edit`                              | Редактирование пользователя          |  `User`                          |  -                       |
 | `GET /api/users/me`                                    | Получении инфо о пользователе        |  -                               |  `User`                  |
 | `POST /api/company`                                    | Создание компании                    |  `CompanyRequest`                |  -                       |
-| `POST /api/company`                                    | Создание компании                    |  `CompanyRequest`                |  -                       |
+| `GET /api/company/my`                                  | Получение инфы о твоей компании      | -             |  `Company`                       |
 | `GET /api/company/addUserById/{user_id}`              | Добавляет пользователя с id = {user_id} в компанию, владельцем которой является отправитель. |  -        |  -                       |
+| `GET /api/survey/answer/{survey_id}`                  | Отправка ответов на опрос             | `String`                       |        -               |
 
 Если в тексте ответа прочерк, то может приходить стандартный ответ (OK, I AM A TEAPOT etc)
 
