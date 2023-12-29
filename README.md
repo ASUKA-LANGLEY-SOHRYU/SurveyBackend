@@ -1,17 +1,18 @@
 # AlphaBackend
 | **API**                                                | **Описание**                         | **Текст запроса**                | **Текст ответа**      |
 |--------------------------------------------------------|--------------------------------------|:--------------------------------:|:---------------------:|
-| `POST /api/survey`                                     | Создание опроса                      | survey:`SurveyRequest`<br>picture:`picture`    |    -    |
-| `GET /api/survey/{id}`                                 | Получение опроса                     |       -                               |   `Survey`       |
-| `POST /api/login`                                      | Регистрация пользователя             |       `LoginRequest`                  |   -              |
-| `GET /api/users/{id}`                                  | Получение пользователя               |       -                               |   `User`         |
-| `POST /api/users/{id}/edit`                            | Редактирование пользователя          |       `User`                          |    -             |
-| `POST /api/company/`                                   | Создание компании                    |       `CompanyRequest`                |   -              |
-| `GET /api/company/{id}`                                | Получение компании                   |       -                               |  `Company`       |
-| `GET /api/company/{company_id}/addUserById/{user_id}`  | Добавление юзера в компанию          |       -                               |  -               |
-| `POST /api/survey/{survey_id}/answer/{user_id}`        | User проходит опрос                  |      `Answers`(Любой формат)          |  -               |
+| `POST /api/auth/register`                              | Регистрация                          | `LoginRequest`                   | `AuthenticationResponse`|
+| `POST /api/auth/authenticate`                          | Аутентификация                       |  `AuthenticationRequest`         |  `AuthenticationResponse`|
+| `POST /api/users/me/edit`                              | Редактирование пользователя          |  `User`                          |  -                       |
+| `GET /api/users/me`                                    | Получении инфо о пользователе        |  -                               |  `User`                  |
+| `POST /api/company`                                    | Создание компании                    |  `CompanyRequest`                |  -                       |
+| `POST /api/company`                                    | Создание компании                    |  `CompanyRequest`                |  -                       |
+| `GET /api/company/addUserById/{user_id}`              | Добавляет пользователя с id = {user_id} в компанию, владельцем которой является отправитель. |  -        |  -                       |
 
 Если в тексте ответа прочерк, то может приходить стандартный ответ (OK, I AM A TEAPOT etc)
+
+# Важно
+Далее в тексте, если написано перечисление, то можно использовать строчный вид, или индекс по порядку. (Например, у None индекс - 0, а у SecondaryVocational - 5.)
 
 # `LoginRequest`
 Класс для регистрации пользователя. Потом в настройках его можно будет изменить.<br>
@@ -19,42 +20,147 @@
 ```json
 {
     "email": "email@mail.com",
-    "fullName": "Misha",
     "password": "password"
 }
 ```
-# `EducationLevel`: 0-2
-# `Income`: 0-2
-# `Role`: 0-2
-# `Address`
-```
+
+# `AuthenticationRequest`
+Класс для аутентификации пользователя.<br>
+Пример:
+```json
 {
-    "id":int,
-    "user":`User`,
-    "country": string,
-    "region":string,
-    "city":string,
-    "street":string
+  "email": "email@mail.com",
+  "password": "email@mail.com"
 }
 ```
-
+# `AuthenticationResponse`
+Токен. В запросах, кроме /auth, нужно добавлять его в заголовок: <br>
+```text
+"Authorization": "Bearer ${token}"
+```
+Пример:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMSIsImlhdCI6MTcwMzU4OTQ0MywiZXhwIjoxNzAzNjc1ODQzfQ.8DyiNKVmPqJhx0rJ4L8YrRhhVyuIMPF-dpBo9xMCdOw",
+  "error": null
+}
+```
 
 # `User`
 Пользователь.<br>
+Пример:
 ```
 {
-    "id": int,
-    "email": string,
-    "password": string,
-    "fullName": string",
-    "sex": "M" | "F",
-    "dateOfBirth": "yyyy-MM-dd",
-    "educationLevel": `EducationLevel`,
-    "income": `Income`,
-    "address": `Address`,
-    "role": `Role`
+    "id": 1,
+    "email": "user1",
+    "password": null,
+    "fullName": "gg",
+    "sex": "M",
+    "dateOfBirth": "2003-08-02",
+    "educationLevel": 5,
+    "income": 30000,
+    "city": "Moscow",
+    "hobbies": [0,1,2],
+    "restaurantVisitsPerWeek": 4,
+    "habits": [3,4],
+    "role": "CompanyOwner",
+    "answersList": [],
+    "makingPurchasesOnline": false
 }
 ```
+Примечания: 
+* формат даты - "yyyy-MM-dd"
+* "income" - заработок, типа int
+
+# `Sex`
+Перечисление. Пол.
+```
+M, F
+```
+
+# `EducationLevel`
+Перечисление. Можно отправлять, как строчки или как индекс по порядку.
+```java
+    None,
+    Primary,
+    BasicGeneral,
+    GeneralSecondary,
+    SecondaryVocational,
+    UnfinishedHigher,
+    HigherBachelorsDegreeOrSpecialty,
+    HigherMastersDegree,
+    HigherPostgraduateStudies
+```
+Например, у None индекс - 0, а у SecondaryVocational - 5.
+Вот еще перевод на русский с индексами:
+```
+        0. Нет
+        1. Начальное образование
+        2. Основное общее образование
+        3. Среднее общее образование
+        4. Среднее профессиональное образование
+        5. Незаконченное высшее
+        6. Высшее образование (бакалавриат/специалитет)
+        7. Высшее образование (магистратура)
+        8. Высшее образование (аспирантура)
+```
+# `Role`
+Перечисление. Роль. 
+```
+User, Interviewer, CompanyOwner, Admin
+```
+
+# `Hobby`
+Перечисление. Хобби. 
+```
+CarTourism,
+    VideoGames,
+    Golf,
+    CountryHouse,
+    HealthyLifestyle,
+    ArtAndNeedlework,
+    Skiing,
+    SportsActivities,
+    Boats,
+    Horses,
+    Music,
+    Interior,
+    HuntingOrFishing,
+    Cooking,
+    WatchingSports,
+    Journeys,
+    Gardening,
+    Technologies,
+    TourismWithCamping,
+    Photographing,
+    Reading,
+    ExtremeSports,
+    Cars
+```
+
+# `Habit`
+Перечисление. Покупательские привычки. 
+```
+    BuyingFood,
+    BuyingClothesAndShoes,
+    VisitingRestaurantsAndCafes,
+    TravelAndVacations,
+    PurchaseOfHouseholdAppliances,
+    AttendingSportsEvents,
+    PurchaseOfCosmetics,
+    BuyingBooksAndMusic,
+    VisitingCinemasAndTheaters,
+    BuyingHouseholdGoods
+```
+# `CompanyRequest`
+Для создания компании. Создатель автоматически в нее добавляется. У него появляется роль `CompanyOwner`.
+Пример:
+```json
+{
+    "name": "КоМпАнИя Ура!!!!"
+}
+```
+
 # `Survey`
 Опрос в бд.<br>
 Пример:
@@ -69,14 +175,89 @@
 ```
 
 # `SurveyRequest`
-Опрос в запросе.<br>
+Для создания опроса. Так-же использует `UserFilter`. О нем далее<br>
 Пример:
 ```json
 {
-    "text": "Текст",
-    "questions": "[{\"question\":\"aabb\",\"type\":1,\"ans\":[\"d\",\"g\",\"g\"]}]",
-    "companyId": 123
+  "text": "опрос номер 1",
+  "questions": "некий json",
+  "companyId": 2,
+  "filter": {
+    "id": null,
+    "sex": "M",
+    "dateOfBirthInterval": null,
+    "educationLevel": 3,
+    "income": {
+      "type": "Less",
+      "first": 40000,
+      "second": 0
+    },
+    "cities": [
+      "Moscow", "Kurgan"
+    ],
+    "hobbies": [
+      "CarTourism"
+    ],
+    "habits": [
+      "TravelAndVacations"
+    ],
+    "restaurantVisitsPerWeek": null,
+    "isMakingPurchasesOnline": null
+  }
 }
+```
+
+# `UserFilter`
+Используется для фильтрации опросов.
+```json
+{
+    "id": int,
+    "sex": Sex,
+    "dateOfBirthInterval": {
+      "type": IntervalType,
+      "first": Date,
+      "second": Date | null
+    },
+    "educationLevel": EducationLevel,
+    "income": {
+      "type": IntervalType,
+      "first": int,
+      "second": int | null
+    },
+    "cities": List<String>,
+    "hobbies": List<Hobby>,
+    "habits": List<Habit>,
+    "restaurantVisitsPerWeek": {
+      "type": IntervalType,
+      "first": int,
+      "second": int | null
+    },
+    "isMakingPurchasesOnline": bool
+  }
+```
+У трех полей типом является интервал. Интервал задается в общем случае 3 параметрами. Типом и двумя значениями. Если используется первые 2 типа, то задействуется только первое значение. Для лучшего понимания интервалов приведу пример:
+```json
+{
+      "type": "More",
+      "first": 30,
+      "second": null
+}
+```
+Данный интервал задает такой луч: `[30: +∞)`
+```json
+{
+      "type": 2,
+      "first": 30,
+      "second": 100
+}
+```
+Данный интервал задает такой отрезок: `[30: 100]`.
+C интервалом дат аналогично.
+
+# `IntervalType`
+Перечисление. Используется для задания типа интервалов.
+```
+Less, More, InBetween
 ```
 
 # `Company`
@@ -125,16 +306,6 @@
         }
     ]
 }
-```
-# БД
-Все таблицы описаны в init.sql в каталоге ресурсов.
-```mermaid
-graph LR
-A(Address) --> B(User)
-B --> C(Company)
-D(Survey) --> C
-E(Answers) --> D
-E --> B
 ```
 
 
