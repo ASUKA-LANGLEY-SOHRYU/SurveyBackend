@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/survey")
 public class SurveyController {
 
@@ -46,5 +48,10 @@ public class SurveyController {
     @GetMapping("/{id}")
     public Survey getSurvey(@PathVariable("id") Long id){
         return surveyService.findById(id);
+    }
+
+    @GetMapping("/my")
+    public List<Survey> getMySurveys(){
+        return surveyService.findAllSuitable();
     }
 }

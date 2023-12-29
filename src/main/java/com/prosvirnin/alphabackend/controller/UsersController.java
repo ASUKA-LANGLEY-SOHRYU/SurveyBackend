@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/users")
 public class UsersController {
 
@@ -31,5 +32,10 @@ public class UsersController {
         if(usersService.edit(user))
             return ResponseEntity.ok(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+    }
+
+    @GetMapping("/me")
+    public User getUserMe(){
+        return usersService.findBySecurityContext().withoutPassword();
     }
 }

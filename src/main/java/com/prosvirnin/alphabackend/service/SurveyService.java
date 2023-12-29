@@ -4,13 +4,14 @@ import com.prosvirnin.alphabackend.model.company.Company;
 import com.prosvirnin.alphabackend.model.survey.Answers;
 import com.prosvirnin.alphabackend.model.survey.Survey;
 import com.prosvirnin.alphabackend.model.survey.SurveyRequest;
+import com.prosvirnin.alphabackend.model.survey.filter.UserFilter;
 import com.prosvirnin.alphabackend.model.user.User;
-import com.prosvirnin.alphabackend.repository.AnswersRepository;
-import com.prosvirnin.alphabackend.repository.CompanyRepository;
-import com.prosvirnin.alphabackend.repository.SurveyRepository;
-import com.prosvirnin.alphabackend.repository.UserRepository;
+import com.prosvirnin.alphabackend.repository.*;
+import com.prosvirnin.alphabackend.repository.specification.SurveySpecifications;
 import org.apache.commons.io.FilenameUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,14 +35,14 @@ public class SurveyService {
 
     private final CompanyRepository companyRepository;
 
-    private final UserRepository userRepository;
+    private final UserFilterRepository userFilterRepository;
 
     @Autowired
-    public SurveyService(SurveyRepository surveyRepository, AnswersRepository answersRepository, CompanyRepository companyRepository, UserRepository userRepository) {
+    public SurveyService(SurveyRepository surveyRepository, AnswersRepository answersRepository, CompanyRepository companyRepository, UserFilterRepository userFilterRepository) {
         this.surveyRepository = surveyRepository;
         this.answersRepository = answersRepository;
         this.companyRepository = companyRepository;
-        this.userRepository = userRepository;
+        this.userFilterRepository = userFilterRepository;
         extensions = List.of("bmp", "jpg", "jpeg", "png");
     }
 
@@ -98,9 +99,19 @@ public class SurveyService {
             return false;
         String pictureName = savePicture(picture);
         Company company = companyRepository.getReferenceById(surveyRequest.getCompanyId());
-        Survey survey = new Survey(surveyRequest.getText(), pictureName, surveyRequest.getQuestions(), company);
+        UserFilter filter = surveyRequest.getFilter();
+        Survey survey = Survey.builder()
+                .text(surveyRequest.getText())
+                .picture(pictureName)
+                .questions(surveyRequest.getQuestions())
+                .company(company)
+                .build();
         company.addSurvey(survey);
         surveyRepository.save(survey);
+        filter.setSurvey(survey);
+        survey.setFilter(filter);
+        userFilterRepository.save(filter);
+        //userFilterRepository.save(filter); // Save the filter first
         return true;
     }
 
@@ -118,5 +129,17 @@ public class SurveyService {
         userRequest.addAnswersList(answersObj);
         answersRepository.save(answersObj);
         return true;
+    }
+    public List<Survey> findAllSuitable(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        return surveyRepository.findAll(Specification
+                .where(SurveySpecifications.isSuitableSex(user.getSex()))
+                .and(SurveySpecifications.isSuitableDateOfBirth(user.getDateOfBirth()))
+                .and(SurveySpecifications.isSuitableEducationLevel(user.getEducationLevel()))
+                .and(SurveySpecifications.isSuitableIncome(user.getIncome()))
+                .and(SurveySpecifications.isSuitableCity(user.getCity()))
+                .and(SurveySpecifications.hasAnyHobby(user.getHobbies())));
     }
 }

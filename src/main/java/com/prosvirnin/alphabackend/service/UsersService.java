@@ -29,24 +29,37 @@ public class UsersService {
         return userRepository.findById(id).get();
     }
 
+    public User findBySecurityContext(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (User) authentication.getPrincipal();
+    }
+
     @Transactional
     public boolean edit(User user){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User toChange = (User) authentication.getPrincipal();
+        if(user.getEmail() != null)
+            toChange.setEmail(user.getEmail());
         if(user.getFullName() != null)
             toChange.setFullName(user.getFullName());
-        if(user.getAddress() != null)
-            toChange.setAddress(user.getAddress());
-        if(user.getIncome() != null)
-            toChange.setIncome(user.getIncome());
-        if(user.getDateOfBirth() != null)
-            toChange.setDateOfBirth(user.getDateOfBirth());
         if(user.getSex() != null)
             toChange.setSex(user.getSex());
         if(user.getEducationLevel() != null)
             toChange.setEducationLevel(user.getEducationLevel());
-        if(user.getEmail() != null)
-            toChange.setEmail(user.getEmail());
+        if(user.getIncome() != null)
+            toChange.setIncome(user.getIncome());
+        if(user.getCity() != null)
+            toChange.setCity(user.getCity());
+        if (user.getHobbies() != null)
+            toChange.setHobbies(user.getHobbies());
+        if (user.getRestaurantVisitsPerWeek() != null)
+            toChange.setRestaurantVisitsPerWeek(user.getRestaurantVisitsPerWeek());
+        if (user.getHabits() != null)
+            toChange.setHabits(user.getHabits());
+        if (user.getHabits() != null)
+            toChange.setHabits(user.getHabits());
+        if (user.getIsMakingPurchasesOnline() != null)
+            toChange.setIsMakingPurchasesOnline(user.getIsMakingPurchasesOnline());
         userRepository.save(toChange);
         return true;
     }

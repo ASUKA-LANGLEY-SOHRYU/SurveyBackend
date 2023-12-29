@@ -33,7 +33,10 @@ public class AuthenticationService {
             throw new EmailAlreadyExistsException(request.email());
         }
 
-        var user = new User(request.email(), passwordEncoder.encode(request.password()), request.fullName());
+        var user = User.builder()
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
+                .build();// new User(request.email(), passwordEncoder.encode(request.password()), request.fullName());
         user.setRole(Role.User);
         userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);

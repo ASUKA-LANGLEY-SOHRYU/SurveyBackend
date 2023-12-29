@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.prosvirnin.alphabackend.model.company.Company;
 import com.prosvirnin.alphabackend.model.survey.Answers;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,15 +20,11 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "Users")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
-
-    public User() {}
-
-    public User(String email, String password, String fullName) {
-        this.email = email;
-        this.password = password;
-        this.fullName = fullName;
-    }
 
 
     @Id
@@ -60,10 +60,24 @@ public class User implements UserDetails {
     @Column(name = "city")
     private String city;
 
-    @OneToOne(mappedBy = "user")
-    private Address address;
+    @ElementCollection(targetClass = Hobby.class, fetch = FetchType.EAGER)
+    @JoinTable(name = "users_hobbies", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "hobbies")
+    @Enumerated(EnumType.STRING)
+    private List<Hobby> hobbies;
 
-    //TODO Соц. класс и потребительские привычки.
+
+    @Column(name = "restaurant_visits_per_week")
+    private Integer restaurantVisitsPerWeek;
+
+    @ElementCollection(targetClass = ConsumerHabits.class, fetch = FetchType.EAGER)
+    @JoinTable(name = "users_habits", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "habits")
+    @Enumerated(EnumType.STRING)
+    private List<ConsumerHabits> habits;
+
+    @Column(name = "is_making_purchases_online")
+    private Boolean isMakingPurchasesOnline;
 
     @Column(name = "role")
     private Role role;
@@ -76,110 +90,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     @JsonManagedReference(value = "user-answers")
     private List<Answers> answersList;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public Sex getSex() {
-        return sex;
-    }
-
-    public void setSex(Sex sex) {
-        this.sex = sex;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public EducationLevel getEducationLevel() {
-        return educationLevel;
-    }
-
-    public void setEducationLevel(EducationLevel educationLevel) {
-        this.educationLevel = educationLevel;
-    }
-
-    public Integer getIncome() {
-        return income;
-    }
-
-    public void setIncome(Integer income) {
-        this.income = income;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public List<Answers> getAnswersList() {
-        return answersList;
-    }
-
-    public void setAnswersList(List<Answers> answersList) {
-        this.answersList = answersList;
-    }
 
     public void addAnswersList(Answers answers) {
         this.answersList.add(answers);
@@ -230,41 +140,5 @@ public class User implements UserDetails {
     public User withoutPassword(){
         password = null;
         return this;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        if (!email.equals(user.email)) return false;
-        if (sex != user.sex) return false;
-        return Objects.equals(dateOfBirth, user.dateOfBirth);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = email.hashCode();
-        result = 31 * result + (sex != null ? sex.hashCode() : 0);
-        result = 31 * result + (dateOfBirth != null ? dateOfBirth.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", sex=" + sex +
-                ", dateOfBirth=" + dateOfBirth +
-                ", educationLevel=" + educationLevel +
-                ", income=" + income +
-                ", address=" + address +
-                ", role=" + role +
-                ", company=" + company +
-                '}';
     }
 }
