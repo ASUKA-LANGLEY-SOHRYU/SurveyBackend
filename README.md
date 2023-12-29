@@ -9,6 +9,7 @@
 | `GET /api/company/my`                                  | Получение инфы о твоей компании      | -             |  `Company`                       |
 | `GET /api/company/addUserById/{user_id}`              | Добавляет пользователя с id = {user_id} в компанию, владельцем которой является отправитель. |  -        |  -                       |
 | `POST /api/survey/answer/{survey_id}`                  | Отправка ответов на опрос             | `String`                       |        -               |
+| `POST /api/survey`                                    | Создание опроса                    |  `SurveyRequest`                |  -                       |
 
 Если в тексте ответа прочерк, то может приходить стандартный ответ (OK, I AM A TEAPOT etc)
 
@@ -181,7 +182,7 @@ CarTourism,
 ```json
 {
   "text": "опрос номер 1",
-  "questions": "некий json",
+  "questions": "List<Question>",
   "companyId": 2,
   "filter": {
     "id": null,
@@ -205,6 +206,19 @@ CarTourism,
     "restaurantVisitsPerWeek": null,
     "isMakingPurchasesOnline": null
   }
+}
+```
+
+# `Question`
+Вопрос в опросе.<br>
+```json
+{
+    		"title":"Вопрос",
+    		"min": 1,
+    		"max": 1,
+    		"answers": [
+    			"Массив", "Строк"
+    		]
 }
 ```
 
