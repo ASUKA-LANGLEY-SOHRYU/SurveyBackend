@@ -169,9 +169,9 @@ CarTourism,
 ```json
 {
     "id": 5,
-    "text": "Текст",
+    "title": "Текст",
     "picture": "название картинки.расширение",
-    "questions": "[{\"question\":\"aabb\",\"type\":1,\"ans\":[\"d\",\"g\",\"g\"]}]",
+    "questions": "List<Question>",
     "answers": []
 }
 ```
@@ -181,7 +181,7 @@ CarTourism,
 Пример:
 ```json
 {
-  "text": "опрос номер 1",
+  "title": "опрос номер 1",
   "questions": "List<Question>",
   "companyId": 2,
   "filter": {
