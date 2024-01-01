@@ -6,8 +6,10 @@
 | `POST /api/users/me/edit`                              | Редактирование пользователя          |  `User`                          |  -                       |
 | `GET /api/users/me`                                    | Получении инфо о пользователе        |  -                               |  `User`                  |
 | `POST /api/company`                                    | Создание компании                    |  `CompanyRequest`                |  -                       |
-| `POST /api/company`                                    | Создание компании                    |  `CompanyRequest`                |  -                       |
+| `GET /api/company/my`                                  | Получение инфы о твоей компании      | -             |  `Company`                       |
 | `GET /api/company/addUserById/{user_id}`              | Добавляет пользователя с id = {user_id} в компанию, владельцем которой является отправитель. |  -        |  -                       |
+| `POST /api/survey/answer/{survey_id}`                  | Отправка ответов на опрос             | `String`                       |        -               |
+| `POST /api/survey`                                    | Создание опроса                    |  `SurveyRequest`                |  -                       |
 
 Если в тексте ответа прочерк, то может приходить стандартный ответ (OK, I AM A TEAPOT etc)
 
@@ -167,9 +169,9 @@ CarTourism,
 ```json
 {
     "id": 5,
-    "text": "Текст",
+    "title": "Текст",
     "picture": "название картинки.расширение",
-    "questions": "[{\"question\":\"aabb\",\"type\":1,\"ans\":[\"d\",\"g\",\"g\"]}]",
+    "questions": "List<Question>",
     "answers": []
 }
 ```
@@ -179,8 +181,8 @@ CarTourism,
 Пример:
 ```json
 {
-  "text": "опрос номер 1",
-  "questions": "некий json",
+  "title": "опрос номер 1",
+  "questions": "List<Question>",
   "companyId": 2,
   "filter": {
     "id": null,
@@ -204,6 +206,19 @@ CarTourism,
     "restaurantVisitsPerWeek": null,
     "isMakingPurchasesOnline": null
   }
+}
+```
+
+# `Question`
+Вопрос в опросе.<br>
+```json
+{
+    		"title":"Вопрос",
+    		"min": 1,
+    		"max": 1,
+    		"answers": [
+    			"Массив", "Строк"
+    		]
 }
 ```
 
