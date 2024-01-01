@@ -1,5 +1,7 @@
 package com.prosvirnin.alphabackend.model.user;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum EducationLevel {
     None,
     Primary,
@@ -9,7 +11,12 @@ public enum EducationLevel {
     UnfinishedHigher,
     HigherBachelorsDegreeOrSpecialty,
     HigherMastersDegree,
-    HigherPostgraduateStudies
+    HigherPostgraduateStudies;
+
+    @JsonValue
+    public int toValue() {
+        return ordinal();
+    }
 }
 
 //        0. Нет

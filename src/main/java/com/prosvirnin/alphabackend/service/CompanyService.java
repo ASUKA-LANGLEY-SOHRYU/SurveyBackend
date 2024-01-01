@@ -6,6 +6,7 @@ import com.prosvirnin.alphabackend.model.user.Role;
 import com.prosvirnin.alphabackend.model.user.User;
 import com.prosvirnin.alphabackend.repository.CompanyRepository;
 import com.prosvirnin.alphabackend.repository.UserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +33,14 @@ public class CompanyService {
 
     public Company findByName(String name){
         return companyRepository.findByName(name);
+    }
+
+    public Company findBySecurityContext(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        var user = (User) authentication.getPrincipal();
+        //Hibernate.initialize(user.getCompany());
+        //Hibernate.initialize(user.getCompany().getSurveys());
+        return companyRepository.findByWorkers_Id(user.getId());
     }
 
     @Transactional
@@ -66,6 +75,26 @@ public class CompanyService {
 
             companyRepository.save(company);
             userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public boolean addWorkerByEmail(String email){
+        var user = userRepository.findByEmail(email);
+        if(user.isPresent()){
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User userRequest = (User) authentication.getPrincipal();
+
+            Company company = userRequest.getCompany();
+
+            company.addWorker(user.get());
+            user.get().setCompany(company);
+            user.get().setRole(Role.Interviewer);
+
+            companyRepository.save(company);
+            userRepository.save(user.get());
             return true;
         }
         return false;

@@ -1,6 +1,7 @@
 package com.prosvirnin.alphabackend.model.survey;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.prosvirnin.alphabackend.model.company.Company;
 import com.prosvirnin.alphabackend.model.survey.filter.UserFilter;
 import jakarta.persistence.*;
@@ -17,8 +18,10 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 public class SurveyRequest {
-    private String text;
-    private String questions;
+    private String title;
+    @JsonManagedReference(value = "company-question")
+    private List<Question> questions;
     private long companyId;
+    @JsonManagedReference(value = "survey-filter")
     private UserFilter filter;
 }

@@ -4,6 +4,7 @@ import com.prosvirnin.alphabackend.auth.LoginRequest;
 import com.prosvirnin.alphabackend.model.user.Role;
 import com.prosvirnin.alphabackend.model.user.User;
 import com.prosvirnin.alphabackend.repository.UserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,19 +30,24 @@ public class UsersService {
         return userRepository.findById(id).get();
     }
 
+
     public User findBySecurityContext(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (User) authentication.getPrincipal();
+        var user = (User) authentication.getPrincipal();
+        //Hibernate.initialize(user.getAnswersList());
+        return user;
     }
 
     @Transactional
     public boolean edit(User user){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User toChange = (User) authentication.getPrincipal();
-        if(user.getEmail() != null)
-            toChange.setEmail(user.getEmail());
+        //if(user.getEmail() != null)
+        //    toChange.setEmail(user.getEmail());
         if(user.getFullName() != null)
             toChange.setFullName(user.getFullName());
+        if(user.getDateOfBirth() != null)
+            toChange.setDateOfBirth(user.getDateOfBirth());
         if(user.getSex() != null)
             toChange.setSex(user.getSex());
         if(user.getEducationLevel() != null)

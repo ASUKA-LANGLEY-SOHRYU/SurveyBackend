@@ -25,6 +25,11 @@ public class CompanyController {
         return companyService.findById(id);
     }
 
+    @GetMapping("/my")
+    public Company getMyCompany(){
+        return companyService.findBySecurityContext();
+    }
+
     @PostMapping
     public ResponseEntity<?> createCompany(@RequestBody CompanyRequest company){
         if(companyService.save(company))
@@ -33,9 +38,16 @@ public class CompanyController {
     }
 
     @GetMapping("/addUserById/{user_id}")
-    public ResponseEntity<?> addUser(@PathVariable("user_id") Long user_id){
+    public ResponseEntity<?> addUserById(@PathVariable("user_id") Long user_id){
         System.out.println(user_id);
         if(companyService.addWorker(user_id))
+            return  ResponseEntity.ok(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+    }
+
+    @PostMapping("/addUserByEmail/")
+    public ResponseEntity<?> addUserByEmail(@RequestBody String email){
+        if(companyService.addWorkerByEmail(email))
             return  ResponseEntity.ok(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }

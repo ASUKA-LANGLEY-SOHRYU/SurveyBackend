@@ -1,6 +1,7 @@
 package com.prosvirnin.alphabackend.model.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.prosvirnin.alphabackend.model.company.Company;
@@ -36,6 +37,7 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "password")
+    @JsonIgnore
     private String password;
 
     @Column(name = "full_name")
@@ -87,7 +89,7 @@ public class User implements UserDetails {
     @JsonBackReference(value = "company-user")
     private Company company;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @JsonManagedReference(value = "user-answers")
     private List<Answers> answersList;
 

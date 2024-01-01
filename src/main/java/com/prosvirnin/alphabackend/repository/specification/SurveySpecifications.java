@@ -30,7 +30,8 @@ public class SurveySpecifications {
             System.out.println(uf);
             var dateType = uf.get("dateOfBirthInterval").get("type");
             return cb.or(
-                    cb.isNull(dateType),
+                    cb.isNull(cb.literal(date)),
+                    cb.isNull(uf.get("dateOfBirthInterval")),
                     cb.and(
                             cb.equal(dateType, IntervalType.Less),
                             cb.greaterThanOrEqualTo(uf.get("dateOfBirthInterval").get("first"), date)),
@@ -39,7 +40,9 @@ public class SurveySpecifications {
                             cb.greaterThanOrEqualTo(uf.get("dateOfBirthInterval").get("first"), date)),
                     cb.and(
                             cb.equal(dateType, IntervalType.InBetween),
-                            cb.between(uf.get("dateOfBirthInterval").get("first"), uf.get("dateOfBirthInterval").get("second"), cb.literal(date)))
+                            cb.between(uf.get("dateOfBirthInterval").get("first"),
+                                    uf.get("dateOfBirthInterval").get("second"),
+                                    cb.literal(date)))
             );
         };
     }
@@ -59,7 +62,7 @@ public class SurveySpecifications {
             Join<Survey, UserFilter> uf = getUserFilterJoin(root);
             var incomeType = uf.get("income").get("type");
             return cb.or(
-                    cb.isNull(incomeType),
+                    cb.isNull(uf.get("income")),
                     cb.and(
                             cb.equal(incomeType, IntervalType.Less),
                             cb.greaterThanOrEqualTo(uf.get("income").get("first"), income)),

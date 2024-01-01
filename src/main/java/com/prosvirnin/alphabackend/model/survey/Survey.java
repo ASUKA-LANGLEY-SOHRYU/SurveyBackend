@@ -27,14 +27,15 @@ public class Survey {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "text")
-    private String text;
+    @Column(name = "title")
+    private String title;
 
     @Column(name = "picture")
     private String picture;
 
-    @Column(name = "questions")
-    private String questions;
+    @OneToMany(mappedBy = "survey")
+    //@JsonManagedReference(value = "survey-question")
+    private List<Question> questions;
 
     @ManyToOne
     @JsonBackReference(value = "company-survey")

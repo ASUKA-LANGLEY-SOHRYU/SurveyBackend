@@ -29,6 +29,7 @@ public class UserFilter {
 
     @Id
     @Column(name = "survey_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @OneToOne(mappedBy = "filter", cascade = CascadeType.ALL)

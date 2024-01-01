@@ -4,6 +4,7 @@ import com.prosvirnin.alphabackend.model.user.User;
 import com.prosvirnin.alphabackend.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +28,8 @@ public class UsersController {
         return usersService.findById(id).withoutPassword();
     }
 
-    @PostMapping("/me/edit")
+    @PostMapping(value = "/me/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin
     public ResponseEntity<?> editUser(@RequestBody User user){
         if(usersService.edit(user))
             return ResponseEntity.ok(HttpStatus.OK);
@@ -35,6 +37,7 @@ public class UsersController {
     }
 
     @GetMapping("/me")
+    @CrossOrigin
     public User getUserMe(){
         return usersService.findBySecurityContext().withoutPassword();
     }

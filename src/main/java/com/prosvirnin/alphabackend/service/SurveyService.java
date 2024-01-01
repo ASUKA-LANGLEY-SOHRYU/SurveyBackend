@@ -2,6 +2,7 @@ package com.prosvirnin.alphabackend.service;
 
 import com.prosvirnin.alphabackend.model.company.Company;
 import com.prosvirnin.alphabackend.model.survey.Answers;
+import com.prosvirnin.alphabackend.model.survey.Question;
 import com.prosvirnin.alphabackend.model.survey.Survey;
 import com.prosvirnin.alphabackend.model.survey.SurveyRequest;
 import com.prosvirnin.alphabackend.model.survey.filter.UserFilter;
@@ -9,7 +10,6 @@ import com.prosvirnin.alphabackend.model.user.User;
 import com.prosvirnin.alphabackend.repository.*;
 import com.prosvirnin.alphabackend.repository.specification.SurveySpecifications;
 import org.apache.commons.io.FilenameUtils;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
@@ -37,12 +37,15 @@ public class SurveyService {
 
     private final UserFilterRepository userFilterRepository;
 
+    private final QuestionRepository questionRepository;
+
     @Autowired
-    public SurveyService(SurveyRepository surveyRepository, AnswersRepository answersRepository, CompanyRepository companyRepository, UserFilterRepository userFilterRepository) {
+    public SurveyService(SurveyRepository surveyRepository, AnswersRepository answersRepository, CompanyRepository companyRepository, UserFilterRepository userFilterRepository, QuestionRepository questionRepository) {
         this.surveyRepository = surveyRepository;
         this.answersRepository = answersRepository;
         this.companyRepository = companyRepository;
         this.userFilterRepository = userFilterRepository;
+        this.questionRepository = questionRepository;
         extensions = List.of("bmp", "jpg", "jpeg", "png");
     }
 
@@ -100,10 +103,10 @@ public class SurveyService {
         String pictureName = savePicture(picture);
         Company company = companyRepository.getReferenceById(surveyRequest.getCompanyId());
         UserFilter filter = surveyRequest.getFilter();
+        List<Question> questions = surveyRequest.getQuestions();
         Survey survey = Survey.builder()
-                .text(surveyRequest.getText())
+                .title(surveyRequest.getTitle())
                 .picture(pictureName)
-                .questions(surveyRequest.getQuestions())
                 .company(company)
                 .build();
         company.addSurvey(survey);
@@ -111,7 +114,9 @@ public class SurveyService {
         filter.setSurvey(survey);
         survey.setFilter(filter);
         userFilterRepository.save(filter);
-        //userFilterRepository.save(filter); // Save the filter first
+        questions.forEach(q -> q.setSurvey(survey));
+        survey.setQuestions(questions);
+        questionRepository.saveAll(questions);
         return true;
     }
 
@@ -136,10 +141,10 @@ public class SurveyService {
 
         return surveyRepository.findAll(Specification
                 .where(SurveySpecifications.isSuitableSex(user.getSex()))
-                .and(SurveySpecifications.isSuitableDateOfBirth(user.getDateOfBirth()))
+                //.and(SurveySpecifications.isSuitableDateOfBirth(user.getDateOfBirth()))
                 .and(SurveySpecifications.isSuitableEducationLevel(user.getEducationLevel()))
                 .and(SurveySpecifications.isSuitableIncome(user.getIncome()))
-                .and(SurveySpecifications.isSuitableCity(user.getCity()))
-                .and(SurveySpecifications.hasAnyHobby(user.getHobbies())));
+                .and(SurveySpecifications.isSuitableCity(user.getCity())));
+                //.and(SurveySpecifications.hasAnyHobby(user.getHobbies())));
     }
 }
